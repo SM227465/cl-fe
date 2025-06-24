@@ -57,6 +57,7 @@ export interface CarDetails {
   buyer_id: string;
   disable_status: boolean;
   imageUrl: string[];
+  buy_status: string;
 }
 
 export interface Option {

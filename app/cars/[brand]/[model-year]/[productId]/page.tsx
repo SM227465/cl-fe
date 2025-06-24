@@ -119,6 +119,8 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
     },
   };
 
+  const features = Object.entries(car.description_data).filter(([_, value]) => value);
+
   return (
     <>
       <script
@@ -141,6 +143,18 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
             </div>
 
             <div className={styles.badges}>
+              {/* {car.payment_order_type_status && car.buy_status !== '1' && <span className='badge-warning'>Reserved</span>}
+
+              {car.buy_status === '1' && <span className='badge-primary'>Sold</span>} */}
+
+              {car.buy_status === '1' ? (
+                <span className='badge-primary'>Sold</span>
+              ) : car.payment_order_type_status && car.buy_status !== '1' ? (
+                <span className='badge-warning'>Reserved</span>
+              ) : (
+                <span className='badge-success'>Available</span>
+              )}
+
               {/* <span
                 className={`badge ${
                   car.description_data['disable_status'] === 'Available' ? 'badge-success' : car.status === 'Coming' ? 'badge-primary' : 'badge-warning'
@@ -171,19 +185,16 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
             </div>
           </div>
 
-          {/* {car.features && car.features.length > 0 && (
-            <div className={styles.features}>
-              <h2>Features</h2>
-              <div className={styles.featureGrid}>
-                {car.features.map((feature, index) => (
-                  <div key={index} className={styles.featureItem}>
-                    <span className={styles.featureIcon}>✓</span>
-                    {feature}
-                  </div>
-                ))}
-              </div>
+          <div className={styles.features}>
+            <h2>All Info</h2>
+            <div className={styles.featureGrid}>
+              {features.map(([label, value], index) => (
+                <div key={index} className={styles.featureItem}>
+                  <strong>{label}:</strong> <span>{value}</span>
+                </div>
+              ))}
             </div>
-          )} */}
+          </div>
         </div>
       </div>
     </>

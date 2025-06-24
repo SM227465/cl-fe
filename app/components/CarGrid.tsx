@@ -16,18 +16,25 @@ const CarGrid = () => {
 
       setLoading(true);
       try {
-        const response = await fetch(`https://car-list-863m.onrender.com/api/v1/cars?page=${pageNum}`);
+        const response = await fetch(
+          `https://car-list-863m.onrender.com/api/v1/cars?page=${pageNum}`
+        );
         const data = await response.json();
-
-        console.log(data.data);
 
         if (pageNum === 1) {
           setCars(data.data);
         } else {
-          setCars((prev) => [...prev, ...data.data]);
+          setCars((prev) => {
+            const allCars = [...prev, ...data.data];
+            const uniqueMap = new Map();
+            allCars.forEach((car) => {
+              uniqueMap.set(car._id, car);
+            });
+            return Array.from(uniqueMap.values());
+          });
         }
 
-        setHasMore(data.hasMore);
+        setHasMore(data.currentPage < data.totalPages);
       } catch (error) {
         console.error('Error fetching cars:', error);
       } finally {
@@ -44,7 +51,8 @@ const CarGrid = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000 &&
+        window.innerHeight + document.documentElement.scrollTop >=
+          document.documentElement.offsetHeight - 1000 &&
         hasMore &&
         !loading
       ) {
@@ -59,7 +67,7 @@ const CarGrid = () => {
 
   return (
     <div className={styles.container}>
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3'>
         {cars.map((car) => (
           <CarCard key={car._id} car={car} />
         ))}
