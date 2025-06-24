@@ -23,6 +23,8 @@ async function getCarData(productId: string): Promise<CarDetails | null> {
     const data = await response.json();
     carDetails = data?.data;
   } catch (error) {
+    console.log(error);
+
     carDetails = null;
   }
 

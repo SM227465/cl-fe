@@ -4,16 +4,35 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 const AddCarPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const [accessToken, setAccessToken] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    const token = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('accessToken='))
+      ?.split('=')[1];
+
+    if (token) {
+      setAccessToken(token);
+    } else {
+      router.replace('/login');
+    }
+  }, [router]);
 
   const [formData, setFormData] = useState({
     brand: '',
-    model: '',
+    carModel: '',
+    vin: '',
+    registrationNumber: '',
+    cc: '',
     year: new Date().getFullYear(),
     price: '',
     mileage: '',
+    cylinders: '',
+    transmissionType: 'Manual',
+    maxSpeed: '',
     fuelType: 'Gasoline',
     transmission: 'Automatic',
     horsepower: '',
@@ -22,31 +41,15 @@ const AddCarPage = () => {
     condition: 'used' as const,
     bodyType: 'Sedan',
     exteriorColor: '',
-    images: [''],
+    image: '',
+    trimType: '',
   });
 
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  useEffect(() => {
-    // Check for admin token
-    const token = localStorage.getItem('adminToken');
-    if (token === 'admin123') {
-      setIsAuthenticated(true);
-    } else {
-      // Simple admin login
-      const enteredToken = prompt('Enter admin token:');
-      if (enteredToken === 'admin123') {
-        localStorage.setItem('adminToken', 'admin123');
-        setIsAuthenticated(true);
-      } else {
-        router.push('/');
-        return;
-      }
-    }
-    setLoading(false);
-  }, [router]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -59,19 +62,22 @@ const AddCarPage = () => {
     setSubmitLoading(true);
 
     try {
-      const response = await fetch('/api/cars', {
+      const response = await fetch('https://car-list-863m.onrender.com/api/v1/cars', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           ...formData,
           price: parseInt(formData.price),
           mileage: parseInt(formData.mileage),
           horsepower: formData.horsepower ? parseInt(formData.horsepower) : undefined,
-          id: Date.now().toString(),
         }),
       });
+
+      const data = await response.json();
+      console.log({ data });
 
       if (response.ok) {
         alert('Car added successfully!');
@@ -87,15 +93,7 @@ const AddCarPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.loading}>
-        <div className={styles.spinner}></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
+  if (!accessToken) {
     return null;
   }
 
@@ -125,18 +123,107 @@ const AddCarPage = () => {
             </div>
 
             <div className='form-group'>
-              <label className='label' htmlFor='model'>
+              <label className='label' htmlFor='carModel'>
                 Model *
               </label>
               <input
                 type='text'
-                id='model'
-                name='model'
-                value={formData.model}
+                id='carModel'
+                name='carModel'
+                value={formData.carModel}
                 onChange={handleInputChange}
                 className='input'
                 required
               />
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='vin'>
+                VIN *
+              </label>
+              <input
+                type='text'
+                id='vin'
+                name='vin'
+                value={formData.vin}
+                onChange={handleInputChange}
+                className='input'
+                required
+              />
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='registrationNumber'>
+                Reg No *
+              </label>
+              <input
+                type='text'
+                id='registrationNumber'
+                name='registrationNumber'
+                value={formData.registrationNumber}
+                onChange={handleInputChange}
+                className='input'
+                required
+              />
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='cc'>
+                CC *
+              </label>
+              <input
+                type='text'
+                id='cc'
+                name='cc'
+                value={formData.cc}
+                onChange={handleInputChange}
+                className='input'
+                required
+              />
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='cylinders'>
+                Cylinders *
+              </label>
+              <select
+                id='cylinders'
+                name='cylinders'
+                value={formData.cylinders}
+                onChange={handleInputChange}
+                className='input'
+                required
+              >
+                <option value='3'>3 Cylinders</option>
+                <option value='4'>4 Cylinders</option>
+                <option value='5'>5 Cylinders</option>
+                <option value='6'>6 Cylinders</option>
+                <option value='8'>8 Cylinders</option>
+                <option value='10'>10 Cylinders</option>
+                <option value='12'>12 Cylinders</option>
+              </select>
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='transmissionType'>
+                Transmission Type *
+              </label>
+              <select
+                id='transmissionType'
+                name='transmissionType'
+                value={formData.transmissionType}
+                onChange={handleInputChange}
+                className='input'
+                required
+              >
+                <option value='Manual'>Manual</option>
+                <option value='Automatic'>Automatic</option>
+                <option value='CVT'>CVT (Continuously Variable)</option>
+                <option value='Dual-Clutch'>Dual-Clutch (DCT)</option>
+                <option value='Semi-Automatic'>Semi-Automatic</option>
+                <option value='Tiptronic'>Tiptronic</option>
+                <option value='Electric'>Electric (Single-speed)</option>
+              </select>
             </div>
 
             <div className='form-group'>
@@ -181,6 +268,49 @@ const AddCarPage = () => {
                 id='mileage'
                 name='mileage'
                 value={formData.mileage}
+                onChange={handleInputChange}
+                className='input'
+                min='0'
+                required
+              />
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='trimType'>
+                Trim Type *
+              </label>
+              <select
+                id='trimType'
+                name='trimType'
+                value={formData.trimType}
+                onChange={handleInputChange}
+                className='input'
+                required
+              >
+                <option value='Base'>Base</option>
+                <option value='Standard'>Standard</option>
+                <option value='Sport'>Sport</option>
+                <option value='Touring'>Touring</option>
+                <option value='Luxury'>Luxury</option>
+                <option value='Premium'>Premium</option>
+                <option value='Limited'>Limited</option>
+                <option value='Platinum'>Platinum</option>
+                <option value='Off-Road'>Off-Road</option>
+                <option value='Performance'>Performance</option>
+                <option value='Custom'>Custom</option>
+                <option value='Other'>Other</option>
+              </select>
+            </div>
+
+            <div className='form-group'>
+              <label className='label' htmlFor='maxSpeed'>
+                Mileage *
+              </label>
+              <input
+                type='number'
+                id='maxSpeed'
+                name='maxSpeed'
+                value={formData.maxSpeed}
                 onChange={handleInputChange}
                 className='input'
                 min='0'

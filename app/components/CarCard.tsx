@@ -10,18 +10,6 @@ interface Props {
 const CarCard = (props: Props) => {
   const { car } = props;
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const formatMileage = (mileage: number) => {
-    return new Intl.NumberFormat('en-US').format(mileage);
-  };
-
   return (
     <Link
       href={`/cars/${car.brand.toLowerCase()}/${car.carModel.toLowerCase().replace(/\s+/g, '-')}-${
@@ -62,7 +50,7 @@ const CarCard = (props: Props) => {
           <div className={styles.details}>
             <div className={styles.detailItem}>
               <span className={styles.detailIcon}>⏲</span>
-              <span>{formatMileage(car.odo)} KM</span>
+              <span>{Intl.NumberFormat().format(car.odo)} KM</span>
             </div>
             <div className={styles.detailItem}>
               <span className={styles.detailIcon}>$</span>
