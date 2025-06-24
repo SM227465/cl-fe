@@ -16,13 +16,15 @@ const CarGrid = () => {
 
       setLoading(true);
       try {
-        const response = await fetch(`/api/cars?page=${pageNum}`);
+        const response = await fetch(`https://car-list-863m.onrender.com/api/v1/cars?page=${pageNum}`);
         const data = await response.json();
 
+        console.log(data.data);
+
         if (pageNum === 1) {
-          setCars(data.cars);
+          setCars(data.data);
         } else {
-          setCars((prev) => [...prev, ...data.cars]);
+          setCars((prev) => [...prev, ...data.data]);
         }
 
         setHasMore(data.hasMore);
@@ -59,7 +61,7 @@ const CarGrid = () => {
     <div className={styles.container}>
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
         {cars.map((car) => (
-          <CarCard key={car.id} car={car} />
+          <CarCard key={car._id} car={car} />
         ))}
       </div>
 
