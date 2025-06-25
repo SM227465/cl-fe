@@ -6,8 +6,8 @@ import styles from './page.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test.user@gmail.com');
+  const [password, setPassword] = useState('Test@1234');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
