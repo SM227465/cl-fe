@@ -78,70 +78,65 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
 
   const carName = `${car.description_data['Model Year']} ${car.description_data['Make']} ${car.description_data['Model']} ${car.description_data['Trim/Type']}`;
 
-  let carImage =
-    BASE_URL +
-    car.vehicle_images.parts_images.filter((part) => part.part_name === 'Front')?.[0].image;
+  let carImage = BASE_URL + car.vehicle_images.parts_images.filter((part) => part.part_name === 'Front')?.[0].image;
 
   if (!carImage) {
     carImage = '/images/car-place-holder.webp';
   }
 
-  const formatPrice = (price: any) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
   const jsonLd = {
     '@context': 'https://schema.org/',
     '@type': 'Car',
-    name: `${carName}`,
+    name: carName,
+    vehicleIdentificationNumber: car.description_data['VIN Number'],
+    // image: [car.vehicleImage],
+    url: typeof window !== 'undefined' ? window.location.href : '',
+    offers: {
+      '@type': 'Offer',
+      availability: 'https://schema.org/InStock',
+      price: car.description_data['price'],
+      priceCurrency: 'SAR',
+    },
+    itemCondition: 'https://schema.org/NewCondition',
     brand: {
       '@type': 'Brand',
       name: car.description_data['Make'],
     },
     model: car.description_data['Model'],
+    vehicleConfiguration: car.description_data['Trim/Type'],
     productionDate: car.description_data['Model Year']?.toString(),
     mileageFromOdometer: {
       '@type': 'QuantitativeValue',
       value: car.description_data['ODO'],
       unitCode: 'SMI',
     },
-    fuelType: car.description_data['Fuel Type'],
-    vehicleTransmission: car.description_data['Transmission Type'],
-    bodyType: car.description_data['Body Type'],
     color: car.description_data['Exterior Colour'],
-    offers: {
-      '@type': 'Offer',
-      price: car.description_data['price'],
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+    vehicleInteriorColor: car.description_data['Interior Colour'],
+    vehicleInteriorType: car.description_data['Upholstery'],
+    bodyType: car.description_data['Body Type'],
+    driveWheelConfiguration: 'https://schema.org/FourWheelDriveConfiguration',
+    vehicleEngine: {
+      '@type': 'EngineSpecification',
+      fuelType: car.description_data['Fuel Type'],
     },
+    vehicleTransmission: car.description_data['Transmission Type'],
+    numberOfDoors: car.description_data['Doors'],
+    vehicleSeatingCapacity: car.description_data['Seat'],
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const features = Object.entries(car.description_data).filter(([_, value]) => value);
+  // const features = Object.entries(car.description_data ?? {}).filter(([key, value]) => Boolean(value));
 
   return (
     <>
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div className='container'>
         <div className={styles.carDetail}>
           <div className={styles.imageSection}>
             <div className={styles.mainImage}>
-              <Image
-                src={carImage}
-                alt={carName}
-                width={800}
-                height={500}
-                className={styles.image}
-                priority
-              />
+              <Image src={carImage} alt={carName} width={800} height={500} className={styles.image} priority />
             </div>
 
             <div className={styles.badges}>
@@ -170,15 +165,13 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
           <div className={styles.infoSection}>
             <div className={styles.header}>
               <h1 className={styles.title}>{carName}</h1>
-              <p className={styles.price}>{formatPrice(car.description_data?.['price'])}</p>
+              <p className={styles.price}>{Intl.NumberFormat().format(car.description_data['price'] as number)}</p>
             </div>
 
             <div className={styles.quickSpecs}>
               <div className={styles.specItem}>
                 <span className={styles.specKey}>VIN</span>
-                <span className={styles.specVal}>
-                  {car.description_data['VIN Number'] || 'N/A'}
-                </span>
+                <span className={styles.specVal}>{car.description_data['VIN Number'] || 'N/A'}</span>
               </div>
               <div className={styles.specItem}>
                 <span className={styles.specKey}>Stock Number</span>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import styles from './page.module.css';
 import { useRouter } from 'next/navigation';
+import styles from './page.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,9 +12,7 @@ export default function LoginPage() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const hasAccessToken = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('accessToken='));
+    const hasAccessToken = document.cookie.split('; ').find((row) => row.startsWith('accessToken='));
 
     if (hasAccessToken) {
       router.replace('/'); // redirect to dashboard if token exists
@@ -51,12 +49,10 @@ export default function LoginPage() {
       // Convert milliseconds to seconds for max-age
       setCookie('accessToken', accessToken, accessExpiresIn / 1000);
       setCookie('refreshToken', refreshToken, refreshExpiresIn / 1000);
-
-      console.log('Login success:', data.user);
       setMessage('Login successful!');
 
-      // OPTIONAL: redirect to dashboard
       router.replace('/');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setMessage(error.message || 'Something went wrong.');
     } finally {
@@ -105,9 +101,7 @@ export default function LoginPage() {
             <p
               style={{
                 marginTop: '1rem',
-                color: message.toLowerCase().includes('success')
-                  ? 'var(--success)'
-                  : 'var(--danger)',
+                color: message.toLowerCase().includes('success') ? 'var(--success)' : 'var(--danger)',
               }}
             >
               {message}

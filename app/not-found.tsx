@@ -8,7 +8,9 @@ export default function NotFound() {
         <div className={styles.content}>
           <h1 className={styles.title}>404</h1>
           <h2 className={styles.subtitle}>Car Not Found</h2>
-          <p className={styles.description}>The car you're looking for doesn't exist or has been removed from our inventory.</p>
+          <p className={styles.description}>
+            The car you&apos;re looking for doesn&apos;t exist or has been removed from our inventory.
+          </p>
           <Link href='/' className='btn btn-primary'>
             Browse All Cars
           </Link>

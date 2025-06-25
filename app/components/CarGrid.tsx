@@ -16,9 +16,7 @@ const CarGrid = () => {
 
       setLoading(true);
       try {
-        const response = await fetch(
-          `https://car-list-863m.onrender.com/api/v1/cars?page=${pageNum}`
-        );
+        const response = await fetch(`https://car-list-863m.onrender.com/api/v1/cars?page=${pageNum}`);
         const data = await response.json();
 
         if (pageNum === 1) {
@@ -51,8 +49,7 @@ const CarGrid = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (
-        window.innerHeight + document.documentElement.scrollTop >=
-          document.documentElement.offsetHeight - 1000 &&
+        window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000 &&
         hasMore &&
         !loading
       ) {
@@ -82,7 +79,7 @@ const CarGrid = () => {
 
       {!hasMore && cars.length > 0 && (
         <div className={styles.endMessage}>
-          <p>You've reached the end of our listings</p>
+          <p>You&apos;ve reached the end of our listings</p>
         </div>
       )}
     </div>
