@@ -41,9 +41,9 @@ export async function generateMetadata({ params }: CarDetailPageProps): Promise<
     };
   }
   const carName = `${car.description_data['Model Year']} ${car.description_data['Make']} ${car.description_data['Model']} ${car.description_data['Trim/Type']}`;
-
+  const carImage = BASE_URL + car.vehicle_images.parts_images.filter((part) => part.part_name === 'Front')?.[0].image;
   const title = `${carName} - AutoHub`;
-  const description = `${carName} for sale. ${car.description_data['ODO']}} miles, ${
+  const description = `${carName} for sale. ${car.description_data['ODO']}} KM, ${
     car.description_data['Fuel Type']
   }, ${car.description_data['price']?.toLocaleString()}. View details and contact seller.`;
 
@@ -54,16 +54,16 @@ export async function generateMetadata({ params }: CarDetailPageProps): Promise<
     openGraph: {
       title,
       description,
-      // url: `https://autohub.com/cars/${params.brand}/${params['model-year']}`,
+      url: `https://phenomenal-entremet-7eb6d4.netlify.app/${car.description_data['Make']}/${car.description_data['Model Year']}`,
       siteName: 'AutoHub',
-      // images: [
-      //   {
-      //     url: car.image || 'https://autohub.com/placeholder-car.jpg',
-      //     width: 1200,
-      //     height: 630,
-      //     alt: `${car.name}`,
-      //   },
-      // ],
+      images: [
+        {
+          url: carImage || 'https://autohub.com/placeholder-car.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${carName}`,
+        },
+      ],
     },
   };
 }
@@ -89,12 +89,12 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
     '@type': 'Car',
     name: carName,
     vehicleIdentificationNumber: car.description_data['VIN Number'],
-    // image: [car.vehicleImage],
+    image: [car.imageUrl],
     url: typeof window !== 'undefined' ? window.location.href : '',
     offers: {
       '@type': 'Offer',
       availability: 'https://schema.org/InStock',
-      price: car.description_data['price'],
+      price: parseInt(car.description_data['price'] as string),
       priceCurrency: 'SAR',
     },
     itemCondition: 'https://schema.org/NewCondition',
@@ -104,7 +104,7 @@ export default async function CarDetailPage({ params }: CarDetailPageProps) {
     },
     model: car.description_data['Model'],
     vehicleConfiguration: car.description_data['Trim/Type'],
-    productionDate: car.description_data['Model Year']?.toString(),
+    vehicleModelDate: car.description_data['Model Year']?.toString(),
     mileageFromOdometer: {
       '@type': 'QuantitativeValue',
       value: car.description_data['ODO'],
